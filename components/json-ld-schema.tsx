@@ -1,8 +1,6 @@
 /**
  * JSON-LD Structured Data for SoftwareApplication
- * Helps search engines understand Watermark Remover as a web application
- * 
- * Note: This is a server component to avoid hydration issues
+ * Tells Google about dual core functions: Watermark Remover + Logo Remover
  */
 import { getTranslations } from 'next-intl/server';
 
@@ -12,9 +10,9 @@ export async function SoftwareApplicationSchema({ locale }: { locale: string }) 
     const schema = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
-        "name": "Watermark Remover - Free AI Tool",
-        "description": t('description'),
-        "applicationCategory": "PhotoEditingApplication",
+        "name": "Gemini Watermark & Logo Remover",
+        "description": "A free tool to remove Gemini Watermarks and specifically erase Gemini Logos from AI generated images.",
+        "applicationCategory": "DesignApplication",
         "operatingSystem": "Web Browser",
         "offers": {
             "@type": "Offer",
@@ -22,18 +20,18 @@ export async function SoftwareApplicationSchema({ locale }: { locale: string }) 
             "priceCurrency": "USD"
         },
         "featureList": [
-            "AI-powered watermark removal",
-            "Gemini SynthID detection",
+            "Gemini Logo Remover",
+            "Gemini Watermark Remover",
+            "SynthID Cleaning",
+            "AI Inpainting",
             "Privacy-first browser processing",
-            "No upload required",
-            "Before/after comparison slider",
-            "Multiple format support (JPG, PNG, WebP)"
+            "No upload required"
         ],
-        "screenshot": "https://watermarkremover.com/og-image.png",
+        "screenshot": "https://wmr.example.com/og-image.png",
         "aggregateRating": {
             "@type": "AggregateRating",
-            "ratingValue": "4.9",
-            "ratingCount": "2150"
+            "ratingValue": "4.8",
+            "ratingCount": "120"
         }
     };
 

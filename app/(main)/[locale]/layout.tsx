@@ -27,19 +27,20 @@ export async function generateMetadata(props: { params: Promise<{ locale: string
     return {
         // ✅ SEO 核心: metadataBase 用于生成绝对 URL
         // TODO: 更新为实际域名
-        metadataBase: new URL('https://watermarkremover.example.com'),
+        metadataBase: new URL('https://wmr.example.com'),
 
+        // 精准并列策略：两个主词独立存在，Google 都能抓取到完整短语
         title: {
-            default: messages.metadata.title,
-            template: '%s | Watermark Remover'
+            default: "Gemini Watermark Remover | Gemini Logo Remover (Free AI Tool)",
+            template: '%s | Gemini Watermark Remover'
         },
-        description: messages.metadata.description,
-        keywords: messages.metadata.keywords,
+        description: "The most advanced AI tool to remove Gemini Watermark and specifically erase the Gemini Logo from image corners. Clean SynthID & artifacts instantly. 100% free, browser-based.",
+        keywords: "gemini watermark remover, gemini logo remover, remove gemini watermark, synthid remover, AI watermark removal",
 
         // ✅ 作者和站点信息
-        authors: [{ name: 'Watermark Remover Team' }],
-        creator: 'Watermark Remover',
-        publisher: 'Watermark Remover',
+        authors: [{ name: 'WMR Team' }],
+        creator: 'WMR',
+        publisher: 'WMR',
 
         // ✅ Open Graph - 添加图片
         openGraph: {

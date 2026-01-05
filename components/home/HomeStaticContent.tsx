@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
-import { Shield, Zap, Target, Sparkles, Smartphone, ImageIcon, Lock, Eye, Download } from 'lucide-react';
+import { Shield, Zap, Target, Sparkles, Smartphone, ImageIcon, Lock, Eye, CheckCircle } from 'lucide-react';
 
 interface HomeStaticContentProps {
     locale: string;
@@ -9,17 +9,15 @@ interface HomeStaticContentProps {
 export default async function HomeStaticContent({ locale }: HomeStaticContentProps) {
     const isZh = locale === 'zh';
     const t = await getTranslations({ locale, namespace: 'features' });
+    const s = await getTranslations({ locale, namespace: 'sections' });
 
     return (
         <>
-            {/* What Section */}
-            <WhatSection isZh={isZh} />
+            {/* SECTION 2: 专注 "Gemini Logo Remover" (E-E-A-T: Experience & Expertise) */}
+            <LogoRemoverSection isZh={isZh} s={s} />
 
-            {/* How Section */}
-            <HowSection isZh={isZh} />
-
-            {/* Why Section */}
-            <WhySection isZh={isZh} />
+            {/* SECTION 3: 专注 "Gemini Watermark Remover" (E-E-A-T: Authority & Tech) */}
+            <WatermarkRemoverSection isZh={isZh} s={s} />
 
             {/* Features Section */}
             <FeaturesSection t={t} />
@@ -33,156 +31,89 @@ export default async function HomeStaticContent({ locale }: HomeStaticContentPro
     );
 }
 
-function WhatSection({ isZh }: { isZh: boolean }) {
+function LogoRemoverSection({ isZh, s }: { isZh: boolean; s: any }) {
     return (
-        <section className="py-20 bg-muted/20">
-            <div className="container px-4 md:px-6">
-                <div className="max-w-4xl mx-auto">
-                    <div className="text-center space-y-4 mb-12">
-                        <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-                            {isZh ? '什么是 Watermark Remover？' : 'What is Watermark Remover?'}
-                        </h2>
-                        <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                            {isZh
-                                ? 'Watermark Remover 是专为去除 AI 生成图片水印设计的免费工具。无论是 Google Gemini 的可见水印还是 SynthID 隐形水印，都能快速处理。100% 浏览器本地处理，您的图片永远不会上传到服务器。'
-                                : 'Watermark Remover is a free tool designed specifically to remove watermarks from AI-generated images. Whether it\'s Google Gemini visible watermarks or SynthID invisible watermarks, we handle them all. 100% browser-based processing - your images never leave your device.'}
-                        </p>
-                    </div>
-
-                    <div className="grid md:grid-cols-3 gap-6">
-                        <div className="bg-background rounded-lg p-6 border border-border">
-                            <div className="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center mb-4">
-                                <Target className="w-6 h-6 text-blue-500" />
-                            </div>
-                            <h3 className="text-xl font-bold mb-2">
-                                {isZh ? 'Gemini 水印' : 'Gemini Watermarks'}
-                            </h3>
-                            <p className="text-muted-foreground">
-                                {isZh
-                                    ? '专门优化处理 Google Gemini 生成图片中的可见水印和标记。'
-                                    : 'Specifically optimized for visible watermarks and markers in Google Gemini generated images.'}
-                            </p>
-                        </div>
-
-                        <div className="bg-background rounded-lg p-6 border border-border">
-                            <div className="w-12 h-12 rounded-lg bg-purple-500/10 flex items-center justify-center mb-4">
-                                <Eye className="w-6 h-6 text-purple-500" />
-                            </div>
-                            <h3 className="text-xl font-bold mb-2">
-                                {isZh ? 'SynthID 检测' : 'SynthID Detection'}
-                            </h3>
-                            <p className="text-muted-foreground">
-                                {isZh
-                                    ? '识别并处理 Google 的 SynthID 隐形数字水印技术。'
-                                    : 'Detect and process Google\'s SynthID invisible digital watermarking technology.'}
-                            </p>
-                        </div>
-
-                        <div className="bg-background rounded-lg p-6 border border-border">
-                            <div className="w-12 h-12 rounded-lg bg-green-500/10 flex items-center justify-center mb-4">
-                                <Shield className="w-6 h-6 text-green-500" />
-                            </div>
-                            <h3 className="text-xl font-bold mb-2">
-                                {isZh ? '隐私保护' : 'Privacy First'}
-                            </h3>
-                            <p className="text-muted-foreground">
-                                {isZh
-                                    ? '所有处理都在您的浏览器本地完成，图片从不上传到任何服务器。'
-                                    : 'All processing happens locally in your browser. Images never upload to any server.'}
-                            </p>
+        <section id="logo-remover" className="w-full py-20 bg-secondary/20">
+            <div className="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center max-w-6xl">
+                <div>
+                    {/* 视觉证据：占位图，后续可替换为 CompareSlider */}
+                    <div className="rounded-xl overflow-hidden border-4 border-white shadow-lg transform -rotate-1 hover:rotate-0 transition duration-500 bg-muted aspect-video flex items-center justify-center">
+                        <div className="text-center p-8">
+                            <Eye className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
+                            <p className="text-muted-foreground">Before & After Demo</p>
                         </div>
                     </div>
+                    <p className="text-center text-sm text-muted-foreground mt-2">Before & After: Corner Logo Removal</p>
+                </div>
+
+                <div className="space-y-6">
+                    {/* H2 精准匹配 */}
+                    <h2 className="text-3xl font-bold">
+                        {isZh ? '为什么需要专门的' : 'Why a Specialized'}{' '}
+                        <span className="text-yellow-600">Gemini Logo Remover</span>
+                        {isZh ? '？' : '?'}
+                    </h2>
+                    <p className="text-muted-foreground">
+                        {s('logo_desc')}
+                    </p>
+                    <ul className="space-y-3">
+                        <li className="flex gap-3">
+                            <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-1" />
+                            <span><strong>{isZh ? '结构重建：' : 'Structure Reconstruction:'}</strong> {isZh ? '我们重新绘制 Logo 后面的背景纹理。' : 'We redraw the background texture behind the logo.'}</span>
+                        </li>
+                        <li className="flex gap-3">
+                            <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-1" />
+                            <span><strong>{isZh ? '文字和图标定位：' : 'Text & Icon Targeting:'}</strong> {isZh ? '专门针对星形图标和 "Generated by Gemini" 文字进行训练。' : 'Specifically trained on the "star" icon and "Generated by Gemini" text.'}</span>
+                        </li>
+                    </ul>
+                    {/* 密度控制：再次提及关键词 */}
+                    <p className="text-muted-foreground">
+                        {isZh
+                            ? '这使我们的工具成为最精准的免费 '
+                            : 'This makes our tool the most precise '}
+                        <strong>Gemini Logo Remover</strong>
+                        {isZh ? '。' : ' available for free.'}
+                    </p>
                 </div>
             </div>
         </section>
     );
 }
 
-function HowSection({ isZh }: { isZh: boolean }) {
-    const steps = isZh ? [
-        { number: 1, title: '上传图片', desc: '拖放或点击上传您的 AI 生成图片' },
-        { number: 2, title: '标记水印', desc: '用画笔涂抹需要去除的水印区域' },
-        { number: 3, title: '一键去除', desc: '点击去除按钮，即刻获得干净图片' },
-    ] : [
-        { number: 1, title: 'Upload Image', desc: 'Drag and drop or click to upload your AI-generated image' },
-        { number: 2, title: 'Mark Watermark', desc: 'Paint over the watermark area you want to remove' },
-        { number: 3, title: 'Remove Instantly', desc: 'Click remove button and get your clean image' },
-    ];
-
+function WatermarkRemoverSection({ isZh, s }: { isZh: boolean; s: any }) {
     return (
-        <section id="how-it-works" className="py-20 bg-background">
-            <div className="container px-4 md:px-6">
-                <div className="max-w-5xl mx-auto">
-                    <div className="text-center space-y-4 mb-12">
-                        <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-                            {isZh ? '如何使用？' : 'How It Works'}
-                        </h2>
-                        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+        <section id="watermark-remover" className="w-full py-20 px-4">
+            <div className="container mx-auto max-w-5xl text-center">
+                <h2 className="text-3xl font-bold mb-6">
+                    {isZh ? '不仅仅是 Logo：完整的' : 'More Than Just a Logo: A Full'}{' '}
+                    <span className="text-orange-600">Gemini Watermark Remover</span>
+                </h2>
+                <p className="text-lg text-muted-foreground mb-10 max-w-3xl mx-auto">
+                    {s('watermark_desc')}
+                </p>
+
+                {/* 技术展示卡片 - 展示专业度 (Expertise) */}
+                <div className="grid md:grid-cols-3 gap-6 text-left">
+                    <div className="p-6 border rounded-xl bg-card hover:shadow-md transition">
+                        <Zap className="w-10 h-10 text-yellow-500 mb-4" />
+                        <h3 className="font-bold text-xl mb-2">{s('synthid_title')}</h3>
+                        <p className="text-sm text-muted-foreground">{s('synthid_desc')}</p>
+                    </div>
+                    <div className="p-6 border rounded-xl bg-card hover:shadow-md transition">
+                        <Shield className="w-10 h-10 text-blue-500 mb-4" />
+                        <h3 className="font-bold text-xl mb-2">{s('metadata_title')}</h3>
+                        <p className="text-sm text-muted-foreground">{s('metadata_desc')}</p>
+                    </div>
+                    <div className="p-6 border rounded-xl bg-card hover:shadow-md transition">
+                        <ImageIcon className="w-10 h-10 text-purple-500 mb-4" />
+                        <h3 className="font-bold text-xl mb-2">{s('export_title')}</h3>
+                        <p className="text-sm text-muted-foreground">
                             {isZh
-                                ? '简单三步，即可去除 AI 图片水印。无需注册，无需下载。'
-                                : 'Three simple steps to remove AI watermarks. No registration, no download required.'}
+                                ? '与其他 Gemini 水印去除器工具不同，我们不会压缩您的画质。'
+                                : 'Unlike other '}
+                            {!isZh && <strong>Gemini Watermark Remover</strong>}
+                            {!isZh && ' tools, we don\'t compress your quality.'}
                         </p>
-                    </div>
-
-                    <div className="grid md:grid-cols-3 gap-8">
-                        {steps.map((step) => (
-                            <div key={step.number} className="relative text-center">
-                                <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white text-2xl font-bold mb-4">
-                                    {step.number}
-                                </div>
-                                <h3 className="text-lg font-bold mb-2">{step.title}</h3>
-                                <p className="text-sm text-muted-foreground">{step.desc}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-        </section>
-    );
-}
-
-function WhySection({ isZh }: { isZh: boolean }) {
-    const reasons = isZh ? [
-        { icon: Lock, title: '完全私密', desc: '图片永不上传服务器，100% 浏览器本地处理' },
-        { icon: Zap, title: '即时处理', desc: '秒级完成水印去除，实时查看处理效果' },
-        { icon: Sparkles, title: '免费使用', desc: '无需注册，无需付费，无任何隐藏费用' },
-        { icon: Smartphone, title: '随处可用', desc: '支持桌面和移动设备，任何现代浏览器都能用' },
-    ] : [
-        { icon: Lock, title: 'Completely Private', desc: 'Images never upload to servers, 100% browser-based processing' },
-        { icon: Zap, title: 'Instant Processing', desc: 'Remove watermarks in seconds, see results in real-time' },
-        { icon: Sparkles, title: 'Free to Use', desc: 'No registration, no payment, no hidden fees' },
-        { icon: Smartphone, title: 'Works Everywhere', desc: 'Desktop and mobile supported, works in any modern browser' },
-    ];
-
-    return (
-        <section className="py-20 bg-muted/20">
-            <div className="container px-4 md:px-6">
-                <div className="max-w-5xl mx-auto">
-                    <div className="text-center space-y-4 mb-12">
-                        <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-                            {isZh ? '为什么选择我们？' : 'Why Choose Us?'}
-                        </h2>
-                    </div>
-
-                    <div className="grid md:grid-cols-2 gap-6">
-                        {reasons.map((reason, idx) => {
-                            const Icon = reason.icon;
-                            return (
-                                <div key={idx} className="bg-background rounded-lg p-6 border border-border hover:shadow-md transition-shadow">
-                                    <div className="flex gap-4">
-                                        <div className="flex-shrink-0">
-                                            <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                                                <Icon className="w-6 h-6 text-primary" />
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <h3 className="text-xl font-bold mb-2">{reason.title}</h3>
-                                            <p className="text-muted-foreground">{reason.desc}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })}
                     </div>
                 </div>
             </div>
@@ -201,7 +132,7 @@ function FeaturesSection({ t }: { t: any }) {
     ];
 
     return (
-        <section id="features" className="py-20 bg-background">
+        <section id="features" className="py-20 bg-muted/20">
             <div className="container px-4 md:px-6">
                 <div className="mx-auto max-w-6xl space-y-12 text-center">
                     <div className="space-y-4">
@@ -219,11 +150,11 @@ function FeaturesSection({ t }: { t: any }) {
                             return (
                                 <div
                                     key={idx}
-                                    className="rounded-2xl bg-muted/30 p-8 shadow-sm border border-border hover:shadow-md transition-shadow"
+                                    className="rounded-2xl bg-background p-8 shadow-sm border border-border hover:shadow-md transition-shadow"
                                 >
                                     <div className="space-y-4">
-                                        <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                                            <Icon className="w-6 h-6 text-primary" />
+                                        <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-yellow-500/10">
+                                            <Icon className="w-6 h-6 text-yellow-600" />
                                         </div>
                                         <h3 className="text-xl font-bold text-foreground">{feature.title}</h3>
                                         <p className="text-muted-foreground">{feature.desc}</p>
@@ -241,42 +172,42 @@ function FeaturesSection({ t }: { t: any }) {
 function FAQSection({ isZh }: { isZh: boolean }) {
     const faqs = isZh ? [
         {
-            q: "如何去除 Gemini 图片中的水印？",
-            a: "1. 上传您的 Gemini 生成图片\n2. 用画笔工具涂抹水印区域\n3. 点击\"去除水印\"按钮\n4. 下载处理后的干净图片"
+            q: "如何使用 Gemini Logo Remover 去除角落 Logo？",
+            a: "1. 上传您的 Gemini 生成图片\n2. 用画笔工具涂抹角落的 Logo 区域\n3. 点击\"去除水印\"按钮\n4. 下载处理后的干净图片"
         },
         {
-            q: "这个工具是免费的吗？",
-            a: "是的，Watermark Remover 完全免费使用。没有隐藏费用，没有水印，也不需要注册账号。"
+            q: "这个 Gemini Watermark Remover 是免费的吗？",
+            a: "是的，完全免费使用。没有隐藏费用，没有水印，也不需要注册账号。"
         },
         {
             q: "我的图片安全吗？",
             a: "绝对安全！所有图片处理都在您的浏览器本地完成，从不上传到任何服务器。您的图片和隐私得到 100% 保护。"
         },
         {
-            q: "可以去除 SynthID 水印吗？",
-            a: "我们的工具可以帮助处理可见的水印和标记。对于 SynthID 等隐形数字水印，我们通过图像重处理技术来减轻其影响。"
+            q: "可以去除 SynthID 隐形水印吗？",
+            a: "我们的 Gemini Watermark Remover 工具可以处理可见的水印和 Logo。对于 SynthID 等隐形数字水印，我们通过图像重处理技术来减轻其影响。"
         }
     ] : [
         {
-            q: "How do I remove watermarks from Gemini images?",
-            a: "1. Upload your Gemini-generated image\n2. Use the brush tool to paint over the watermark area\n3. Click the 'Remove Watermark' button\n4. Download your clean image"
+            q: "How do I use the Gemini Logo Remover to erase corner logos?",
+            a: "1. Upload your Gemini-generated image\n2. Use the brush tool to paint over the corner logo area\n3. Click the 'Remove Watermark' button\n4. Download your clean image"
         },
         {
-            q: "Is this tool free?",
-            a: "Yes, Watermark Remover is completely free to use. No hidden fees, no watermarks on output, and no registration required."
+            q: "Is this Gemini Watermark Remover free?",
+            a: "Yes, completely free to use. No hidden fees, no watermarks on output, and no registration required."
         },
         {
             q: "Are my images safe?",
             a: "Absolutely! All image processing happens locally in your browser. Nothing is uploaded to any server. Your images and privacy are 100% protected."
         },
         {
-            q: "Can it remove SynthID watermarks?",
-            a: "Our tool can help process visible watermarks and markers. For invisible digital watermarks like SynthID, we use image reprocessing techniques to reduce their impact."
+            q: "Can it remove SynthID invisible watermarks?",
+            a: "Our Gemini Watermark Remover tool can process visible watermarks and logos. For invisible digital watermarks like SynthID, we use image reprocessing techniques to reduce their impact."
         }
     ];
 
     return (
-        <section className="py-20 bg-muted/20 border-t">
+        <section className="py-20 bg-background border-t">
             <div className="container px-4 md:px-6">
                 <div className="max-w-4xl mx-auto space-y-12">
                     <div className="text-center space-y-4">
@@ -287,7 +218,7 @@ function FAQSection({ isZh }: { isZh: boolean }) {
 
                     <div className="grid gap-6">
                         {faqs.map((faq, idx) => (
-                            <div key={idx} className="bg-background rounded-lg p-6 space-y-3 border border-border">
+                            <div key={idx} className="bg-muted/30 rounded-lg p-6 space-y-3 border border-border">
                                 <h3 className="text-xl font-bold">{faq.q}</h3>
                                 <div className="text-muted-foreground whitespace-pre-line leading-relaxed">
                                     {faq.a}
@@ -303,22 +234,22 @@ function FAQSection({ isZh }: { isZh: boolean }) {
 
 function CTASection({ isZh, locale }: { isZh: boolean; locale: string }) {
     return (
-        <section className="py-20 bg-gradient-to-b from-background to-muted/20">
+        <section className="py-20 bg-gradient-to-b from-yellow-50/50 to-background dark:from-yellow-950/20 dark:to-background">
             <div className="container px-4 md:px-6">
                 <div className="mx-auto max-w-4xl text-center space-y-8">
                     <div className="space-y-6">
                         <h2 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-                            {isZh ? '立即开始' : 'Start Removing Watermarks'}
+                            {isZh ? '立即开始去除 Gemini 水印' : 'Start Removing Gemini Watermarks Now'}
                         </h2>
                         <p className="mx-auto max-w-2xl text-muted-foreground text-lg">
                             {isZh
-                                ? '免费、快速、完全私密。无需注册，立即使用。'
-                                : 'Free, fast, and completely private. No sign-up required.'}
+                                ? '免费、快速、完全私密。无需注册，立即使用我们的 Gemini Logo Remover。'
+                                : 'Free, fast, and completely private. Try our Gemini Logo Remover - no sign-up required.'}
                         </p>
                         <div className="flex flex-wrap justify-center gap-4 pt-4">
                             <Link
                                 href={`/${locale}`}
-                                className="px-8 py-4 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:opacity-90 transition-opacity font-medium text-lg"
+                                className="px-8 py-4 rounded-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white hover:opacity-90 transition-opacity font-medium text-lg shadow-lg"
                             >
                                 {isZh ? '上传图片开始' : 'Upload Image to Start'}
                             </Link>
