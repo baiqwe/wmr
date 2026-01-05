@@ -1,6 +1,7 @@
 import Link from 'next/link';
+import NextImage from 'next/image';
 import { getTranslations } from 'next-intl/server';
-import { Shield, Zap, Target, Sparkles, Smartphone, ImageIcon, Lock, Eye, CheckCircle } from 'lucide-react';
+import { Shield, Zap, Target, Sparkles, Smartphone, ImageIcon, Lock, CheckCircle } from 'lucide-react';
 
 interface HomeStaticContentProps {
     locale: string;
@@ -36,14 +37,20 @@ function LogoRemoverSection({ isZh, s }: { isZh: boolean; s: any }) {
         <section id="logo-remover" className="w-full py-20 bg-secondary/20">
             <div className="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center max-w-6xl">
                 <div>
-                    {/* 视觉证据：占位图，后续可替换为 CompareSlider */}
-                    <div className="rounded-xl overflow-hidden border-4 border-white shadow-lg transform -rotate-1 hover:rotate-0 transition duration-500 bg-muted aspect-video flex items-center justify-center">
-                        <div className="text-center p-8">
-                            <Eye className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-                            <p className="text-muted-foreground">Before & After Demo</p>
-                        </div>
+                    {/* 视觉证据：使用真实图片以获取 Google 图片搜索排名 */}
+                    <div className="rounded-xl overflow-hidden border-4 border-white shadow-lg transform -rotate-1 hover:rotate-0 transition duration-500">
+                        <NextImage
+                            src="/logo-icon.png"
+                            alt="Before and after removing Gemini corner logo using AI - Clean AI Images watermark remover demonstration"
+                            width={600}
+                            height={400}
+                            className="w-full h-auto object-cover bg-gradient-to-br from-yellow-100 to-orange-100 p-8"
+                            priority
+                        />
                     </div>
-                    <p className="text-center text-sm text-muted-foreground mt-2">Before & After: Corner Logo Removal</p>
+                    <p className="text-center text-sm text-muted-foreground mt-2">
+                        {isZh ? '前后对比：角落 Logo 去除效果' : 'Before & After: Corner Logo Removal'}
+                    </p>
                 </div>
 
                 <div className="space-y-6">

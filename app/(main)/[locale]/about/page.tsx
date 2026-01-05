@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             title,
             description,
             type: 'website',
-            url: `https://wmr.example.com/${locale}/about`,
+            url: `https://cleanaiimages.com/${locale}/about`,
             images: [
                 {
                     url: ogImage,
@@ -45,8 +45,8 @@ export default async function AboutPage({ params }: PageProps) {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
         "itemListElement": [
-            { "@type": "ListItem", position: 1, name: isZh ? '首页' : 'Home', item: `https://wmr.example.com/${locale}` },
-            { "@type": "ListItem", position: 2, name: isZh ? '关于我们' : 'About Us', item: `https://wmr.example.com/${locale}/about` },
+            { "@type": "ListItem", position: 1, name: isZh ? '首页' : 'Home', item: `https://cleanaiimages.com/${locale}` },
+            { "@type": "ListItem", position: 2, name: isZh ? '关于我们' : 'About Us', item: `https://cleanaiimages.com/${locale}/about` },
         ]
     };
 

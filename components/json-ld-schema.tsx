@@ -27,7 +27,7 @@ export async function SoftwareApplicationSchema({ locale }: { locale: string }) 
             "Privacy-first browser processing",
             "No upload required"
         ],
-        "screenshot": "https://wmr.example.com/og-image.png",
+        "screenshot": "https://cleanaiimages.com/logo-icon.png",
         "aggregateRating": {
             "@type": "AggregateRating",
             "ratingValue": "4.8",

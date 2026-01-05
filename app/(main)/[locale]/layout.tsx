@@ -27,7 +27,7 @@ export async function generateMetadata(props: { params: Promise<{ locale: string
     return {
         // ✅ SEO 核心: metadataBase 用于生成绝对 URL
         // TODO: 更新为实际域名
-        metadataBase: new URL('https://wmr.example.com'),
+        metadataBase: new URL('https://cleanaiimages.com'),
 
         // 精准并列策略：两个主词独立存在，Google 都能抓取到完整短语
         title: {
@@ -48,7 +48,7 @@ export async function generateMetadata(props: { params: Promise<{ locale: string
             description: messages.metadata.description,
             type: "website",
             locale: locale === 'zh' ? 'zh_CN' : 'en_US',
-            url: `https://watermarkremover.example.com/${locale}`,
+            url: `https://cleanaiimages.com/${locale}`,
             siteName: 'Watermark Remover',
             images: [
                 {
