@@ -43,7 +43,7 @@ export default function Header({ user }: HeaderProps) {
   // Main navigation items
   const mainNavItems: NavItem[] = [
     { label: t('home'), href: localePrefix },
-    { label: currentLocale === 'zh' ? '填色画' : 'Coloring Pages', href: `${localePrefix}/photo-to-coloring-page` },
+    { label: t('features'), href: `${localePrefix}#features` },
     { label: t('about'), href: `${localePrefix}/about` },
   ];
 
@@ -76,21 +76,19 @@ export default function Header({ user }: HeaderProps) {
           <div className="hidden md:flex items-center gap-1 mr-2">
             <Link
               href={`/en${pathWithoutLocale}`}
-              className={`px-2 py-1 rounded text-sm transition-colors ${
-                currentLocale === 'en' 
-                  ? 'bg-primary text-primary-foreground' 
+              className={`px-2 py-1 rounded text-sm transition-colors ${currentLocale === 'en'
+                  ? 'bg-primary text-primary-foreground'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-              }`}
+                }`}
             >
               EN
             </Link>
             <Link
               href={`/zh${pathWithoutLocale}`}
-              className={`px-2 py-1 rounded text-sm transition-colors ${
-                currentLocale === 'zh' 
-                  ? 'bg-primary text-primary-foreground' 
+              className={`px-2 py-1 rounded text-sm transition-colors ${currentLocale === 'zh'
+                  ? 'bg-primary text-primary-foreground'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-              }`}
+                }`}
             >
               中文
             </Link>

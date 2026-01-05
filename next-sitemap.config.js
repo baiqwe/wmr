@@ -1,6 +1,7 @@
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-    siteUrl: process.env.SITE_URL || 'https://makebw.com',
+    // TODO: Update to actual domain when available
+    siteUrl: process.env.SITE_URL || 'https://watermarkremover.example.com',
     generateRobotsTxt: true,
     generateIndexSitemap: false,
     exclude: ['/api/*', '/_next/*', '/server-sitemap.xml', '/icon.svg', '/apple-icon.png', '/_auth-pages/*'],
@@ -8,11 +9,11 @@ module.exports = {
     // Generate alternate language links
     alternateRefs: [
         {
-            href: 'https://makebw.com/en',
+            href: 'https://watermarkremover.example.com/en',
             hreflang: 'en',
         },
         {
-            href: 'https://makebw.com/zh',
+            href: 'https://watermarkremover.example.com/zh',
             hreflang: 'zh',
         },
     ],

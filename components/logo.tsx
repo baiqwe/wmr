@@ -15,14 +15,14 @@ export function Logo() {
       className="flex items-center gap-2 hover:opacity-90 transition-opacity"
     >
       <Image
-        src="/favicon-96x96.png"
-        alt="MakeBW Logo"
+        src="/logo-icon.png"
+        alt="Watermark Remover Logo"
         width={32}
         height={32}
         className="rounded-lg"
       />
-      <span className="font-bold text-lg bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-        MakeBW
+      <span className="font-bold text-lg bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+        Watermark Remover
       </span>
     </Link>
   );

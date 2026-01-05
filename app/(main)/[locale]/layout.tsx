@@ -26,19 +26,20 @@ export async function generateMetadata(props: { params: Promise<{ locale: string
 
     return {
         // ✅ SEO 核心: metadataBase 用于生成绝对 URL
-        metadataBase: new URL('https://makebw.com'),
+        // TODO: 更新为实际域名
+        metadataBase: new URL('https://watermarkremover.example.com'),
 
         title: {
             default: messages.metadata.title,
-            template: '%s | MakeBW.com'
+            template: '%s | Watermark Remover'
         },
         description: messages.metadata.description,
         keywords: messages.metadata.keywords,
 
         // ✅ 作者和站点信息
-        authors: [{ name: 'Bai' }],
-        creator: 'Bai',
-        publisher: 'MakeBW.com',
+        authors: [{ name: 'Watermark Remover Team' }],
+        creator: 'Watermark Remover',
+        publisher: 'Watermark Remover',
 
         // ✅ Open Graph - 添加图片
         openGraph: {
@@ -46,14 +47,14 @@ export async function generateMetadata(props: { params: Promise<{ locale: string
             description: messages.metadata.description,
             type: "website",
             locale: locale === 'zh' ? 'zh_CN' : 'en_US',
-            url: `https://makebw.com/${locale}`,
-            siteName: 'MakeBW.com',
+            url: `https://watermarkremover.example.com/${locale}`,
+            siteName: 'Watermark Remover',
             images: [
                 {
-                    url: 'https://makebw.com/web-app-manifest-512x512.png',
+                    url: '/logo-icon.png',
                     width: 512,
                     height: 512,
-                    alt: 'MakeBW - Free Image to Black and White Converter',
+                    alt: 'Watermark Remover - Free AI Watermark Removal Tool',
                 },
             ],
         },
@@ -63,7 +64,7 @@ export async function generateMetadata(props: { params: Promise<{ locale: string
             card: "summary_large_image",
             title: messages.metadata.title,
             description: messages.metadata.description,
-            images: ['https://makebw.com/web-app-manifest-512x512.png'],
+            images: ['/logo-icon.png'],
         },
 
         // ✅ Canonical & 多语言 alternates

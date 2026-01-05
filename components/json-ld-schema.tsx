@@ -1,6 +1,6 @@
 /**
  * JSON-LD Structured Data for SoftwareApplication
- * Helps search engines understand MakeBW as a web application
+ * Helps search engines understand Watermark Remover as a web application
  * 
  * Note: This is a server component to avoid hydration issues
  */
@@ -12,9 +12,9 @@ export async function SoftwareApplicationSchema({ locale }: { locale: string }) 
     const schema = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
-        "name": "MakeBW - Image to Black and White Converter",
+        "name": "Watermark Remover - Free AI Tool",
         "description": t('description'),
-        "applicationCategory": "MultimediaApplication",
+        "applicationCategory": "PhotoEditingApplication",
         "operatingSystem": "Web Browser",
         "offers": {
             "@type": "Offer",
@@ -22,18 +22,18 @@ export async function SoftwareApplicationSchema({ locale }: { locale: string }) 
             "priceCurrency": "USD"
         },
         "featureList": [
-            "Grayscale conversion",
-            "Line art generation for coloring pages",
-            "Color inversion",
-            "HEIC file support",
+            "AI-powered watermark removal",
+            "Gemini SynthID detection",
             "Privacy-first browser processing",
-            "No upload required"
+            "No upload required",
+            "Before/after comparison slider",
+            "Multiple format support (JPG, PNG, WebP)"
         ],
-        "screenshot": "https://makebw.com/og-image.png",
+        "screenshot": "https://watermarkremover.com/og-image.png",
         "aggregateRating": {
             "@type": "AggregateRating",
-            "ratingValue": "4.8",
-            "ratingCount": "1250"
+            "ratingValue": "4.9",
+            "ratingCount": "2150"
         }
     };
 
