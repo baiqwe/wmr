@@ -130,9 +130,6 @@ export default async function LocaleLayout(props: {
 
     const messages = await getMessages({ locale });
 
-    // MVP: 暂时不使用 Supabase，用户设为 null
-    const user = null;
-
     return (
         <html lang={locale} className={geistSans.className} suppressHydrationWarning>
             <body className="bg-background text-foreground antialiased" suppressHydrationWarning>
@@ -146,7 +143,7 @@ export default async function LocaleLayout(props: {
                         disableTransitionOnChange
                     >
                         <div className="relative min-h-screen flex flex-col">
-                            <Header user={user} />
+                            <Header />
                             <main className="flex-1">{children}</main>
                             <Footer />
                         </div>
