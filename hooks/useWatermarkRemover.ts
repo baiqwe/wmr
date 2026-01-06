@@ -8,11 +8,11 @@ interface ProcessResult {
     error?: string;
 }
 
-// 蒙版配置：对应 C++ 项目中的 bg_small 和 bg_large
-// 必须确保这些文件存在于 public/masks/ 目录下
+// 蒙版配置：基于实测 Gemini 水印尺寸
+// 实测：Logo ~36x36, margin ~23px，使用稍大的蒙版确保完全覆盖
 const MASKS = {
-    small: '/masks/gemini_mask_48.png', // 对应 <= 1024x1024
-    large: '/masks/gemini_mask_96.png'  // 对应 > 1024x1024
+    small: '/masks/gemini_mask_40.png', // 实测版本 (40x40)
+    large: '/masks/gemini_mask_80.png'  // 放大版本 (80x80)
 };
 
 /**
@@ -60,12 +60,12 @@ export function useWatermarkRemover() {
 
                     const config = isLarge ? {
                         maskSrc: MASKS.large,
-                        logoSize: 96,
-                        margin: 64
+                        logoSize: 80,   // 实测放大版
+                        margin: 42      // 21 * 2
                     } : {
                         maskSrc: MASKS.small,
-                        logoSize: 48,
-                        margin: 32
+                        logoSize: 40,   // 实测版本
+                        margin: 21      // 实测边距
                     };
 
                     // 3. Calculate Position (Bottom-Right)

@@ -25,7 +25,7 @@ export default function WatermarkEditor({ onImageUploaded }: WatermarkEditorProp
     const [downloadFormat, setDownloadFormat] = useState<'png' | 'jpg'>('png');
     const [error, setError] = useState<string | null>(null);
 
-    const handleImageSelect = async (imageSrc: string, file: File) => {
+    const handleImageSelect = useCallback(async (imageSrc: string, file: File) => {
         setOriginalImage(imageSrc);
         setFileName(file.name.replace(/\.[^/.]+$/, ''));
         setProcessedImage('');
@@ -49,7 +49,7 @@ export default function WatermarkEditor({ onImageUploaded }: WatermarkEditorProp
         } finally {
             setIsProcessing(false);
         }
-    };
+    }, [removeWatermark, onImageUploaded]);
 
     const handleDownload = () => {
         if (!processedImage) return;
