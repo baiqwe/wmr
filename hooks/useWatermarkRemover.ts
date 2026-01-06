@@ -8,33 +8,37 @@ interface ProcessResult {
     error?: string;
 }
 
+// 蒙版配置：对应 C++ 项目中的 bg_small 和 bg_large
+// 必须确保这些文件存在于 public/masks/ 目录下
+const MASKS = {
+    small: '/masks/gemini_mask_48.png', // 对应 <= 1024x1024
+    large: '/masks/gemini_mask_96.png'  // 对应 > 1024x1024
+};
+
 /**
- * Client-side watermark removal hook using Canvas inpainting
- * Uses simple content-aware fill algorithm for MVP
+ * Gemini Watermark Removal using Inverse Alpha Blending
+ * Ported from: https://github.com/allenk/GeminiWatermarkTool
+ * 
+ * This algorithm mathematically reverses the watermark blending to restore original pixels.
+ * Formula: original = (watermarked - alpha * logo) / (1 - alpha)
  */
 export function useWatermarkRemover() {
 
     /**
-     * Remove watermark using mask-based inpainting
+     * Remove Gemini Watermark using Inverse Alpha Blending
      * @param imageSrc - Original image data URL or src
-     * @param maskDataUrl - Binary mask (white = area to remove)
+     * @param _unusedMask - (Optional) Ignored - algorithm auto-detects logo position
      */
     const removeWatermark = useCallback(async (
         imageSrc: string,
-        maskDataUrl: string
+        _unusedMask?: string
     ): Promise<ProcessResult> => {
         return new Promise((resolve) => {
-            try {
-                const img = new Image();
-                const mask = new Image();
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
 
-                let imageLoaded = false;
-                let maskLoaded = false;
-
-                const processWhenReady = () => {
-                    if (!imageLoaded || !maskLoaded) return;
-
-                    // Create canvas for processing
+            img.onload = () => {
+                try {
                     const canvas = document.createElement('canvas');
                     canvas.width = img.width;
                     canvas.height = img.height;
@@ -45,211 +49,124 @@ export function useWatermarkRemover() {
                         return;
                     }
 
-                    // Draw original image
+                    // 1. Draw original image
                     ctx.drawImage(img, 0, 0);
 
-                    // Get image data
-                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    const pixels = imageData.data;
+                    // 2. Determine Configuration (Ported from src/watermark_engine.cpp)
+                    // Gemini Rules: 
+                    // - Large (96x96, 64px margin): BOTH width AND height > 1024
+                    // - Small (48x48, 32px margin): Otherwise (including 1024x1024)
+                    const isLarge = img.width > 1024 && img.height > 1024;
 
-                    // Create mask canvas at same size
-                    const maskCanvas = document.createElement('canvas');
-                    maskCanvas.width = img.width;
-                    maskCanvas.height = img.height;
-                    const maskCtx = maskCanvas.getContext('2d');
+                    const config = isLarge ? {
+                        maskSrc: MASKS.large,
+                        logoSize: 96,
+                        margin: 64
+                    } : {
+                        maskSrc: MASKS.small,
+                        logoSize: 48,
+                        margin: 32
+                    };
 
-                    if (!maskCtx) {
-                        resolve({ success: false, error: 'Failed to get mask context' });
+                    // 3. Calculate Position (Bottom-Right)
+                    const logoX = img.width - config.margin - config.logoSize;
+                    const logoY = img.height - config.margin - config.logoSize;
+
+                    // Safety check for very small images
+                    if (logoX < 0 || logoY < 0) {
+                        resolve({ success: false, error: 'Image too small for watermark removal' });
                         return;
                     }
 
-                    maskCtx.drawImage(mask, 0, 0, img.width, img.height);
-                    const maskData = maskCtx.getImageData(0, 0, img.width, img.height);
-                    const maskPixels = maskData.data;
+                    // 4. Load the appropriate Alpha Mask
+                    const maskImg = new Image();
+                    maskImg.crossOrigin = 'anonymous';
+                    maskImg.src = config.maskSrc;
 
-                    // Find masked pixels and apply inpainting
-                    const width = canvas.width;
-                    const height = canvas.height;
-                    const sampleRadius = 15; // Pixels to sample from around the mask
+                    maskImg.onload = () => {
+                        // Create a temp canvas to read mask data
+                        const maskCanvas = document.createElement('canvas');
+                        maskCanvas.width = config.logoSize;
+                        maskCanvas.height = config.logoSize;
+                        const maskCtx = maskCanvas.getContext('2d', { willReadFrequently: true });
 
-                    for (let y = 0; y < height; y++) {
-                        for (let x = 0; x < width; x++) {
-                            const idx = (y * width + x) * 4;
+                        if (!maskCtx) {
+                            resolve({ success: false, error: 'Failed to process mask' });
+                            return;
+                        }
 
-                            // Check if this pixel is in the mask (white = masked)
-                            if (maskPixels[idx] > 128) {
-                                // This pixel needs to be inpainted
-                                // Sample surrounding non-masked pixels
-                                let totalR = 0, totalG = 0, totalB = 0, count = 0;
+                        maskCtx.drawImage(maskImg, 0, 0, config.logoSize, config.logoSize);
 
-                                for (let dy = -sampleRadius; dy <= sampleRadius; dy++) {
-                                    for (let dx = -sampleRadius; dx <= sampleRadius; dx++) {
-                                        const nx = x + dx;
-                                        const ny = y + dy;
+                        // Get pixel data
+                        const maskData = maskCtx.getImageData(0, 0, config.logoSize, config.logoSize);
+                        const imgData = ctx.getImageData(logoX, logoY, config.logoSize, config.logoSize);
 
-                                        if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-                                            const nidx = (ny * width + nx) * 4;
+                        // 5. Apply Inverse Alpha Blending (Core Algorithm)
+                        // Formula: original = (watermarked - alpha * logo) / (1 - alpha)
 
-                                            // Only sample non-masked pixels
-                                            if (maskPixels[nidx] < 128) {
-                                                // Weight by distance (closer pixels have more influence)
-                                                const dist = Math.sqrt(dx * dx + dy * dy);
-                                                const weight = 1 / (1 + dist * 0.5);
+                        const pixelCount = config.logoSize * config.logoSize;
+                        const data = imgData.data;
+                        const mData = maskData.data;
+                        const logoValue = 255.0; // Gemini logo is white
 
-                                                totalR += pixels[nidx] * weight;
-                                                totalG += pixels[nidx + 1] * weight;
-                                                totalB += pixels[nidx + 2] * weight;
-                                                count += weight;
-                                            }
-                                        }
-                                    }
-                                }
+                        // Parameters to avoid division by zero or noise amplification
+                        const ALPHA_THRESHOLD = 0.002; // Ignore very small alpha (noise)
+                        const MAX_ALPHA = 0.99;        // Avoid division by zero
 
-                                if (count > 0) {
-                                    pixels[idx] = Math.round(totalR / count);
-                                    pixels[idx + 1] = Math.round(totalG / count);
-                                    pixels[idx + 2] = Math.round(totalB / count);
-                                }
+                        for (let i = 0; i < pixelCount * 4; i += 4) {
+                            // Mask is grayscale/white-on-black, so any channel (R) represents alpha intensity
+                            // alpha normalized to 0.0 - 1.0
+                            let alpha = mData[i] / 255.0;
+
+                            if (alpha < ALPHA_THRESHOLD) continue;
+
+                            // Clamp alpha
+                            if (alpha > MAX_ALPHA) alpha = MAX_ALPHA;
+
+                            const oneMinusAlpha = 1.0 - alpha;
+                            const alphaTimesLogo = alpha * logoValue;
+
+                            // Process R, G, B channels
+                            for (let c = 0; c < 3; c++) {
+                                const watermarked = data[i + c];
+
+                                // The Inverse Formula
+                                let original = (watermarked - alphaTimesLogo) / oneMinusAlpha;
+
+                                // Clamp result to valid byte range
+                                if (original < 0) original = 0;
+                                if (original > 255) original = 255;
+
+                                data[i + c] = original;
                             }
+                            // Alpha channel (data[i+3]) remains unchanged
                         }
-                    }
 
-                    // Apply light blur to smooth transitions
-                    const blurRadius = 2;
-                    const blurredData = applyGaussianBlur(pixels, width, height, maskPixels, blurRadius);
+                        // 6. Put processed pixels back
+                        ctx.putImageData(imgData, logoX, logoY);
 
-                    // Copy blurred data only for masked regions
-                    for (let i = 0; i < pixels.length; i += 4) {
-                        if (maskPixels[i] > 128) {
-                            pixels[i] = blurredData[i];
-                            pixels[i + 1] = blurredData[i + 1];
-                            pixels[i + 2] = blurredData[i + 2];
-                        }
-                    }
+                        resolve({
+                            success: true,
+                            resultDataUrl: canvas.toDataURL(imageSrc.startsWith('data:image/jpeg') ? 'image/jpeg' : 'image/png')
+                        });
+                    };
 
-                    ctx.putImageData(imageData, 0, 0);
+                    maskImg.onerror = () => {
+                        console.error(`Failed to load mask: ${config.maskSrc}`);
+                        resolve({ success: false, error: '系统缺少水印蒙版文件。请联系管理员。' });
+                    };
+                } catch (e) {
+                    resolve({ success: false, error: e instanceof Error ? e.message : 'Unknown error' });
+                }
+            };
 
-                    resolve({
-                        success: true,
-                        resultDataUrl: canvas.toDataURL('image/png')
-                    });
-                };
+            img.onerror = () => {
+                resolve({ success: false, error: 'Failed to load image' });
+            };
 
-                img.crossOrigin = 'anonymous';
-                img.onload = () => {
-                    imageLoaded = true;
-                    processWhenReady();
-                };
-                img.onerror = () => {
-                    resolve({ success: false, error: 'Failed to load image' });
-                };
-
-                mask.crossOrigin = 'anonymous';
-                mask.onload = () => {
-                    maskLoaded = true;
-                    processWhenReady();
-                };
-                mask.onerror = () => {
-                    resolve({ success: false, error: 'Failed to load mask' });
-                };
-
-                img.src = imageSrc;
-                mask.src = maskDataUrl;
-
-            } catch (error) {
-                resolve({
-                    success: false,
-                    error: error instanceof Error ? error.message : 'Unknown error'
-                });
-            }
+            img.src = imageSrc;
         });
     }, []);
 
     return { removeWatermark };
-}
-
-/**
- * Apply gaussian blur to smooth inpainted regions
- */
-function applyGaussianBlur(
-    pixels: Uint8ClampedArray,
-    width: number,
-    height: number,
-    maskPixels: Uint8ClampedArray,
-    radius: number
-): Uint8ClampedArray {
-    const result = new Uint8ClampedArray(pixels.length);
-    const kernel = createGaussianKernel(radius);
-    const kernelSize = kernel.length;
-    const halfKernel = Math.floor(kernelSize / 2);
-
-    for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-            const idx = (y * width + x) * 4;
-
-            // Only blur masked pixels
-            if (maskPixels[idx] > 128) {
-                let r = 0, g = 0, b = 0, totalWeight = 0;
-
-                for (let ky = 0; ky < kernelSize; ky++) {
-                    for (let kx = 0; kx < kernelSize; kx++) {
-                        const nx = x + kx - halfKernel;
-                        const ny = y + ky - halfKernel;
-
-                        if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-                            const nidx = (ny * width + nx) * 4;
-                            const weight = kernel[ky][kx];
-
-                            r += pixels[nidx] * weight;
-                            g += pixels[nidx + 1] * weight;
-                            b += pixels[nidx + 2] * weight;
-                            totalWeight += weight;
-                        }
-                    }
-                }
-
-                result[idx] = Math.round(r / totalWeight);
-                result[idx + 1] = Math.round(g / totalWeight);
-                result[idx + 2] = Math.round(b / totalWeight);
-                result[idx + 3] = pixels[idx + 3];
-            } else {
-                result[idx] = pixels[idx];
-                result[idx + 1] = pixels[idx + 1];
-                result[idx + 2] = pixels[idx + 2];
-                result[idx + 3] = pixels[idx + 3];
-            }
-        }
-    }
-
-    return result;
-}
-
-/**
- * Create 2D Gaussian kernel
- */
-function createGaussianKernel(radius: number): number[][] {
-    const size = radius * 2 + 1;
-    const kernel: number[][] = [];
-    const sigma = radius / 2;
-    let sum = 0;
-
-    for (let y = 0; y < size; y++) {
-        kernel[y] = [];
-        for (let x = 0; x < size; x++) {
-            const dx = x - radius;
-            const dy = y - radius;
-            const value = Math.exp(-(dx * dx + dy * dy) / (2 * sigma * sigma));
-            kernel[y][x] = value;
-            sum += value;
-        }
-    }
-
-    // Normalize
-    for (let y = 0; y < size; y++) {
-        for (let x = 0; x < size; x++) {
-            kernel[y][x] /= sum;
-        }
-    }
-
-    return kernel;
 }
