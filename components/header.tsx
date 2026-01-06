@@ -77,8 +77,8 @@ export default function Header({ user }: HeaderProps) {
             <Link
               href={`/en${pathWithoutLocale}`}
               className={`px-2 py-1 rounded text-sm transition-colors ${currentLocale === 'en'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                 }`}
             >
               EN
@@ -86,8 +86,8 @@ export default function Header({ user }: HeaderProps) {
             <Link
               href={`/zh${pathWithoutLocale}`}
               className={`px-2 py-1 rounded text-sm transition-colors ${currentLocale === 'zh'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                 }`}
             >
               中文
@@ -95,7 +95,8 @@ export default function Header({ user }: HeaderProps) {
           </div>
 
           <ThemeSwitcher />
-          {user ? (
+          {/* Feature Flag: 暂时隐藏认证入口，避免 404，未来由 SHOW_AUTH = true 开启 */}
+          {false && (user ? (
             <div className="hidden md:flex items-center gap-2">
               {isDashboard && (
                 <span className="hidden sm:inline text-sm text-muted-foreground">
@@ -127,7 +128,7 @@ export default function Header({ user }: HeaderProps) {
                 <Link href={`${localePrefix}/sign-up`}>{t('sign_up')}</Link>
               </Button>
             </div>
-          )}
+          ))}
           <MobileNav items={navItems} user={user} isDashboard={isDashboard} currentLocale={currentLocale} />
         </div>
       </div>
