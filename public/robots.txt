@@ -1,11 +1,6 @@
-# *
 User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /_next/
 
-# Host
-Host: https://cleanaiimages.com
-
-# Sitemaps
 Sitemap: https://cleanaiimages.com/sitemap.xml

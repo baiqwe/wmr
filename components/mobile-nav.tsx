@@ -10,14 +10,17 @@ import {
 } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import Link from "next/link";
+import { signOutAction } from "@/app/actions";
 import { usePathname } from "next/navigation";
 
 interface MobileNavProps {
   items: { label: string; href: string }[];
+  user: any;
+  isDashboard: boolean;
   currentLocale?: string;
 }
 
-export function MobileNav({ items, currentLocale = 'en' }: MobileNavProps) {
+export function MobileNav({ items, user, isDashboard, currentLocale = 'en' }: MobileNavProps) {
   const pathname = usePathname();
   const localePrefix = `/${currentLocale}`;
 
@@ -50,19 +53,21 @@ export function MobileNav({ items, currentLocale = 'en' }: MobileNavProps) {
           </span>
           <Link
             href={`/en${pathWithoutLocale}`}
-            className={`px-3 py-1.5 rounded text-sm transition-colors ${currentLocale === 'en'
-              ? 'bg-primary text-primary-foreground'
-              : 'bg-muted text-muted-foreground hover:text-foreground'
-              }`}
+            className={`px-3 py-1.5 rounded text-sm transition-colors ${
+              currentLocale === 'en'
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground hover:text-foreground'
+            }`}
           >
             EN
           </Link>
           <Link
             href={`/zh${pathWithoutLocale}`}
-            className={`px-3 py-1.5 rounded text-sm transition-colors ${currentLocale === 'zh'
-              ? 'bg-primary text-primary-foreground'
-              : 'bg-muted text-muted-foreground hover:text-foreground'
-              }`}
+            className={`px-3 py-1.5 rounded text-sm transition-colors ${
+              currentLocale === 'zh'
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground hover:text-foreground'
+            }`}
           >
             中文
           </Link>
@@ -79,6 +84,47 @@ export function MobileNav({ items, currentLocale = 'en' }: MobileNavProps) {
             </Link>
           ))}
         </nav>
+        <div className="mt-auto pt-4 border-t">
+          {user ? (
+            <div className="flex flex-col gap-2">
+              {user.email && (
+                <p className="text-sm text-muted-foreground">{user.email}</p>
+              )}
+              {!isDashboard && (
+                <>
+                  <Button asChild variant="default" className="w-full">
+                    <Link href={`${localePrefix}/profile`}>
+                      {currentLocale === 'zh' ? '个人中心' : 'Profile'}
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full">
+                    <Link href={`${localePrefix}/dashboard`}>
+                      {currentLocale === 'zh' ? '控制台' : 'Dashboard'}
+                    </Link>
+                  </Button>
+                </>
+              )}
+              <form action={signOutAction} className="w-full">
+                <Button type="submit" variant="outline" className="w-full">
+                  {currentLocale === 'zh' ? '退出登录' : 'Sign out'}
+                </Button>
+              </form>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2">
+              <Button asChild variant="outline" className="w-full">
+                <Link href={`${localePrefix}/sign-in`}>
+                  {currentLocale === 'zh' ? '登录' : 'Sign in'}
+                </Link>
+              </Button>
+              <Button asChild variant="default" className="w-full">
+                <Link href={`${localePrefix}/sign-up`}>
+                  {currentLocale === 'zh' ? '注册' : 'Sign up'}
+                </Link>
+              </Button>
+            </div>
+          )}
+        </div>
       </SheetContent>
     </Sheet>
   );

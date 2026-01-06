@@ -1,5 +1,6 @@
 "use client";
 
+import { signOutAction } from "@/app/actions";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { ThemeSwitcher } from "./theme-switcher";
@@ -9,14 +10,16 @@ import { MobileNav } from "./mobile-nav";
 import { useTranslations } from "next-intl";
 import { useRouter, usePathname as useIntlPathname } from "@/i18n/routing";
 
-interface HeaderProps { }
+interface HeaderProps {
+  user: any;
+}
 
 interface NavItem {
   label: string;
   href: string;
 }
 
-export default function Header({ }: HeaderProps) {
+export default function Header({ user }: HeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
   const t = useTranslations('nav');
@@ -69,13 +72,13 @@ export default function Header({ }: HeaderProps) {
         </nav>
 
         <div className="flex items-center gap-2">
-          {/* Language Switcher */}
+          {/* Language Switcher - 修复后的版本 */}
           <div className="hidden md:flex items-center gap-1 mr-2">
             <Link
               href={`/en${pathWithoutLocale}`}
               className={`px-2 py-1 rounded text-sm transition-colors ${currentLocale === 'en'
-                ? 'bg-primary text-primary-foreground'
-                : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                 }`}
             >
               EN
@@ -83,8 +86,8 @@ export default function Header({ }: HeaderProps) {
             <Link
               href={`/zh${pathWithoutLocale}`}
               className={`px-2 py-1 rounded text-sm transition-colors ${currentLocale === 'zh'
-                ? 'bg-primary text-primary-foreground'
-                : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                 }`}
             >
               中文
@@ -92,8 +95,40 @@ export default function Header({ }: HeaderProps) {
           </div>
 
           <ThemeSwitcher />
-
-          <MobileNav items={navItems} currentLocale={currentLocale} />
+          {user ? (
+            <div className="hidden md:flex items-center gap-2">
+              {isDashboard && (
+                <span className="hidden sm:inline text-sm text-muted-foreground">
+                  {user.email}
+                </span>
+              )}
+              {!isDashboard && (
+                <>
+                  <Button asChild size="sm" variant="default">
+                    <Link href={`${localePrefix}/profile`}>Profile</Link>
+                  </Button>
+                  <Button asChild size="sm" variant="outline">
+                    <Link href={`${localePrefix}/dashboard`}>Dashboard</Link>
+                  </Button>
+                </>
+              )}
+              <form action={signOutAction}>
+                <Button type="submit" variant="outline" size="sm">
+                  {t('sign_out')}
+                </Button>
+              </form>
+            </div>
+          ) : (
+            <div className="hidden md:flex gap-2">
+              <Button asChild size="sm" variant="outline">
+                <Link href={`${localePrefix}/sign-in`}>{t('sign_in')}</Link>
+              </Button>
+              <Button asChild size="sm">
+                <Link href={`${localePrefix}/sign-up`}>{t('sign_up')}</Link>
+              </Button>
+            </div>
+          )}
+          <MobileNav items={navItems} user={user} isDashboard={isDashboard} currentLocale={currentLocale} />
         </div>
       </div>
     </header>
