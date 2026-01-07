@@ -37,9 +37,6 @@
     "editor": {
         "mode_label": "工具：",
         "mode_watermark": "去除水印",
-        "mode_grayscale": "灰度转换",
-        "mode_coloring": "线稿提取",
-        "mode_invert": "颜色反转",
         "brush_label": "画笔大小：",
         "brush_small": "小",
         "brush_large": "大",

@@ -8,6 +8,12 @@ interface ProcessResult {
     error?: string;
 }
 
+// 定义自定义配置接口
+export interface WatermarkConfig {
+    size?: number;   // 自定义水印尺寸 (px)
+    margin?: number; // 自定义右下角边距 (px)
+}
+
 // 蒙版配置：基于实测 Gemini 水印尺寸
 // 实测：Logo ~36x36, margin ~23px，使用稍大的蒙版确保完全覆盖
 const MASKS = {
@@ -27,11 +33,11 @@ export function useWatermarkRemover() {
     /**
      * Remove Gemini Watermark using Inverse Alpha Blending
      * @param imageSrc - Original image data URL or src
-     * @param _unusedMask - (Optional) Ignored - algorithm auto-detects logo position
+     * @param customConfig - (Optional) Custom size and margin configuration
      */
     const removeWatermark = useCallback(async (
         imageSrc: string,
-        _unusedMask?: string
+        customConfig?: WatermarkConfig
     ): Promise<ProcessResult> => {
         return new Promise((resolve) => {
             const img = new Image();
@@ -52,42 +58,49 @@ export function useWatermarkRemover() {
                     // 1. Draw original image
                     ctx.drawImage(img, 0, 0);
 
-                    // 2. Determine Configuration (Ported from src/watermark_engine.cpp)
+                    // 2. Determine Configuration (Auto-detection or Custom)
                     // Gemini Rules: 
                     // - Large (96x96, 64px margin): BOTH width AND height > 1024
                     // - Small (48x48, 32px margin): Otherwise (including 1024x1024)
+
+                    // 即使是手动模式，我们也需要选择一个“最接近”的源蒙版文件来缩放
+                    // 保留原有的自动判断逻辑作为默认值
                     const isLarge = img.width > 1024 && img.height > 1024;
 
-                    const config = isLarge ? {
+                    const baseConfig = isLarge ? {
                         maskSrc: MASKS.large,
-                        logoSize: 80,   // 实测放大版
-                        margin: 42      // 21 * 2
+                        defaultSize: 80,   // 实测放大版
+                        defaultMargin: 42  // 21 * 2
                     } : {
                         maskSrc: MASKS.small,
-                        logoSize: 40,   // 实测版本
-                        margin: 21      // 实测边距
+                        defaultSize: 40,   // 实测版本
+                        defaultMargin: 21  // 实测边距
                     };
 
-                    // 3. Calculate Position (Bottom-Right)
-                    const logoX = img.width - config.margin - config.logoSize;
-                    const logoY = img.height - config.margin - config.logoSize;
+                    // 3. Apply Parameters (Custom overrides Default)
+                    const targetSize = customConfig?.size ?? baseConfig.defaultSize;
+                    const targetMargin = customConfig?.margin ?? baseConfig.defaultMargin;
 
-                    // Safety check for very small images
+                    // 4. Calculate Position (Bottom-Right)
+                    const logoX = img.width - targetMargin - targetSize;
+                    const logoY = img.height - targetMargin - targetSize;
+
+                    // Safety check for very small images or invalid positions
                     if (logoX < 0 || logoY < 0) {
-                        resolve({ success: false, error: 'Image too small for watermark removal' });
+                        resolve({ success: false, error: 'Image too small for watermark removal with current settings' });
                         return;
                     }
 
-                    // 4. Load the appropriate Alpha Mask
+                    // 5. Load the appropriate Alpha Mask
                     const maskImg = new Image();
                     maskImg.crossOrigin = 'anonymous';
-                    maskImg.src = config.maskSrc;
+                    maskImg.src = baseConfig.maskSrc;
 
                     maskImg.onload = () => {
-                        // Create a temp canvas to read mask data
+                        // Create a temp canvas to process mask data (scaling if needed)
                         const maskCanvas = document.createElement('canvas');
-                        maskCanvas.width = config.logoSize;
-                        maskCanvas.height = config.logoSize;
+                        maskCanvas.width = targetSize;
+                        maskCanvas.height = targetSize;
                         const maskCtx = maskCanvas.getContext('2d', { willReadFrequently: true });
 
                         if (!maskCtx) {
@@ -95,16 +108,18 @@ export function useWatermarkRemover() {
                             return;
                         }
 
-                        maskCtx.drawImage(maskImg, 0, 0, config.logoSize, config.logoSize);
+                        // Use drawImage to scale the source mask to targetSize
+                        // This handles the resizing dynamically
+                        maskCtx.drawImage(maskImg, 0, 0, targetSize, targetSize);
 
                         // Get pixel data
-                        const maskData = maskCtx.getImageData(0, 0, config.logoSize, config.logoSize);
-                        const imgData = ctx.getImageData(logoX, logoY, config.logoSize, config.logoSize);
+                        const maskData = maskCtx.getImageData(0, 0, targetSize, targetSize);
+                        const imgData = ctx.getImageData(logoX, logoY, targetSize, targetSize);
 
-                        // 5. Apply Inverse Alpha Blending (Core Algorithm)
+                        // 6. Apply Inverse Alpha Blending (Core Algorithm)
                         // Formula: original = (watermarked - alpha * logo) / (1 - alpha)
 
-                        const pixelCount = config.logoSize * config.logoSize;
+                        const pixelCount = targetSize * targetSize;
                         const data = imgData.data;
                         const mData = maskData.data;
                         const logoValue = 255.0; // Gemini logo is white
@@ -142,7 +157,7 @@ export function useWatermarkRemover() {
                             // Alpha channel (data[i+3]) remains unchanged
                         }
 
-                        // 6. Put processed pixels back
+                        // 7. Put processed pixels back
                         ctx.putImageData(imgData, logoX, logoY);
 
                         resolve({
@@ -152,7 +167,7 @@ export function useWatermarkRemover() {
                     };
 
                     maskImg.onerror = () => {
-                        console.error(`Failed to load mask: ${config.maskSrc}`);
+                        console.error(`Failed to load mask: ${baseConfig.maskSrc}`);
                         resolve({ success: false, error: '系统缺少水印蒙版文件。请联系管理员。' });
                     };
                 } catch (e) {

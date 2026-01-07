@@ -1,7 +1,7 @@
 {
-  "name": "MakeBW - Free Image to Black and White Converter",
-  "short_name": "MakeBW",
-  "description": "Convert images to black and white instantly. Free, private, browser-based image processing.",
+  "name": "Gemini Watermark Remover - Free AI Logo Removal Tool",
+  "short_name": "GeminiWMR",
+  "description": "Remove Gemini watermarks and logos from AI-generated images. 100% free, private, browser-based processing.",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
@@ -23,4 +23,3 @@
   "scope": "/",
   "orientation": "portrait-primary"
 }
-

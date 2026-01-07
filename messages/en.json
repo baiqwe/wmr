@@ -37,9 +37,6 @@
     "editor": {
         "mode_label": "Tool:",
         "mode_watermark": "Remove Watermark",
-        "mode_grayscale": "Grayscale",
-        "mode_coloring": "Line Art",
-        "mode_invert": "Invert Colors",
         "brush_label": "Brush Size:",
         "brush_small": "Small",
         "brush_large": "Large",
