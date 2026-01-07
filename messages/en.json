@@ -50,7 +50,17 @@
         "button_remove": "Remove Watermark",
         "button_clear": "Clear Mask",
         "hint_draw": "Draw over the watermark or logo area to mark it for removal",
-        "processing": "Processing..."
+        "processing": "Processing...",
+        "success_badge": "Watermark Removed",
+        "error_title": "Processing Failed",
+        "error_retry": "Try Again",
+        "adjust_title": "Fine-tune",
+        "adjust_enable": "Enable Manual Adjustment",
+        "adjust_size": "Watermark Size",
+        "adjust_size_hint": "If there are still white edges or shadows, try dragging left or right.",
+        "adjust_margin": "Edge Distance",
+        "adjust_margin_hint": "Adjust the position of the watermark from the bottom-right corner.",
+        "adjust_auto_hint": "If auto-processing isn't perfect (e.g., image was compressed or cropped), enable manual adjustment."
     },
     "features": {
         "title": "Why Use Our Gemini Watermark Remover?",

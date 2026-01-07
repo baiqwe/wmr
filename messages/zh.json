@@ -50,7 +50,17 @@
         "button_remove": "去除水印",
         "button_clear": "清除蒙版",
         "hint_draw": "在水印或 Logo 区域上涂抹以标记要去除的部分",
-        "processing": "处理中..."
+        "processing": "处理中...",
+        "success_badge": "水印已处理",
+        "error_title": "处理失败",
+        "error_retry": "重新开始",
+        "adjust_title": "效果微调",
+        "adjust_enable": "开启手动微调",
+        "adjust_size": "水印尺寸",
+        "adjust_size_hint": "如果依然有残留白边或黑影，请左右拖动尝试。",
+        "adjust_margin": "边缘距离",
+        "adjust_margin_hint": "调整水印距离右下角的位置。",
+        "adjust_auto_hint": "如果自动处理效果不完美（如图片被压缩或裁剪过），请开启手动调整。"
     },
     "features": {
         "title": "为什么选择我们的 Gemini 水印去除器？",

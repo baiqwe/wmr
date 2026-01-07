@@ -131,11 +131,11 @@ export default function WatermarkEditor({ onImageUploaded }: WatermarkEditorProp
         return (
             <div className="max-w-2xl mx-auto text-center py-12">
                 <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-6">
-                    <h3 className="text-xl font-semibold text-destructive mb-2">处理失败</h3>
+                    <h3 className="text-xl font-semibold text-destructive mb-2">{t('error_title')}</h3>
                     <p className="text-muted-foreground mb-4">{error}</p>
                     <Button onClick={handleReset} variant="outline">
                         <RefreshCw className="w-4 h-4 mr-2" />
-                        重新开始
+                        {t('error_retry')}
                     </Button>
                 </div>
             </div>
@@ -149,7 +149,7 @@ export default function WatermarkEditor({ onImageUploaded }: WatermarkEditorProp
             <div className="flex justify-center">
                 <div className="inline-flex items-center gap-2 bg-green-500/10 text-green-600 border border-green-500/30 rounded-full px-4 py-2">
                     <CheckCircle className="w-5 h-5" />
-                    <span className="font-medium">水印已处理</span>
+                    <span className="font-medium">{t('success_badge')}</span>
                 </div>
             </div>
 
@@ -167,7 +167,7 @@ export default function WatermarkEditor({ onImageUploaded }: WatermarkEditorProp
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <Settings2 className="w-5 h-5 text-primary" />
-                        <h3 className="font-medium">效果微调</h3>
+                        <h3 className="font-medium">{t('adjust_title')}</h3>
                     </div>
                     <div className="flex items-center gap-2">
                         <Checkbox
@@ -193,7 +193,7 @@ export default function WatermarkEditor({ onImageUploaded }: WatermarkEditorProp
                             }}
                         />
                         <Label htmlFor="adjust-mode" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            开启手动微调
+                            {t('adjust_enable')}
                         </Label>
                     </div>
                 </div>
@@ -202,7 +202,7 @@ export default function WatermarkEditor({ onImageUploaded }: WatermarkEditorProp
                     <div className="grid gap-6 animate-in fade-in slide-in-from-top-2 pt-2">
                         <div className="space-y-3">
                             <div className="flex justify-between">
-                                <Label>水印尺寸 (Size): {customSize[0]}px</Label>
+                                <Label>{t('adjust_size')}: {customSize[0]}px</Label>
                             </div>
                             <Slider
                                 value={customSize}
@@ -212,12 +212,12 @@ export default function WatermarkEditor({ onImageUploaded }: WatermarkEditorProp
                                 max={150}
                                 step={1}
                             />
-                            <p className="text-xs text-muted-foreground">如果依然有残留白边或黑影，请左右拖动尝试。</p>
+                            <p className="text-xs text-muted-foreground">{t('adjust_size_hint')}</p>
                         </div>
 
                         <div className="space-y-3">
                             <div className="flex justify-between">
-                                <Label>边缘距离 (Margin): {customMargin[0]}px</Label>
+                                <Label>{t('adjust_margin')}: {customMargin[0]}px</Label>
                             </div>
                             <Slider
                                 value={customMargin}
@@ -227,12 +227,12 @@ export default function WatermarkEditor({ onImageUploaded }: WatermarkEditorProp
                                 max={100}
                                 step={1}
                             />
-                            <p className="text-xs text-muted-foreground">调整水印距离右下角的位置。</p>
+                            <p className="text-xs text-muted-foreground">{t('adjust_margin_hint')}</p>
                         </div>
                     </div>
                 ) : (
                     <p className="text-xs text-muted-foreground text-center pt-1">
-                        如果自动处理效果不完美（如图片被压缩或裁剪过），请开启手动调整。
+                        {t('adjust_auto_hint')}
                     </p>
                 )}
             </div>
